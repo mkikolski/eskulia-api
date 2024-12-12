@@ -1,0 +1,2 @@
+# Uruchamianie skryptu Python codziennie o północy 
+0 0 * * * /usr/local/bin/python3 /app/database_update.py >> /var/log/cron.log 2>&1
