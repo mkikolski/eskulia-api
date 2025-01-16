@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import django
 import sys
-from sync_rpl.database_handler import Medicine
+from .database_handler import Medicine
 
 
 # sys.path.append('/Users/wiktoriapabis/Desktop/Projekt_grupowy/eskulia-api')
