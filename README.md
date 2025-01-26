@@ -13,3 +13,7 @@ tba
 
 ## Contributors
 tba
+
+> [!IMPORTANT] 
+> To allow communication with firebase You need to get `firebase-config.json` file which must be generated through firebase project
+

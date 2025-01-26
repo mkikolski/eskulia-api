@@ -1,6 +1,6 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('notifications_handler/', views.notifications_handler, name='notifications_handler'),
+    path('notifications/', include('api.notifications.urls')),
 ]

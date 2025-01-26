@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
-    'rest_framework'
+    'rest_framework',
+    'api.notifications'
 ]
 
 MIDDLEWARE = [
@@ -124,3 +126,18 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Firebase Configuration
+FIREBASE_CONFIG_PATH = BASE_DIR / 'firebase-config.json'
+
+try:
+    with open(FIREBASE_CONFIG_PATH) as firebase_config_file:
+        FIREBASE_CONFIG = json.load(firebase_config_file)
+except FileNotFoundError:
+    raise FileNotFoundError(
+        f"Firebase configuration file not found at {FIREBASE_CONFIG_PATH}. "
+        "Please create firebase-config.json file in the project root directory."
+    )
