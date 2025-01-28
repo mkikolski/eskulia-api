@@ -137,3 +137,13 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
+INSTALLED_APPS = [
+    'django_crontab',
+]
+
+# Zdefiniowanie zaplanowanych zadań cron
+CRONJOBS = [
+    # Zadanie uruchamiane codziennie o północy
+    ('0 0 * * *', 'eskulia-api.cron.my_scheduled_job'),
+]
