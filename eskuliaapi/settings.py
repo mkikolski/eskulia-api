@@ -77,12 +77,12 @@ WSGI_APPLICATION = 'eskuliaapi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -131,9 +131,9 @@ import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'mydatabase'),
-        'USER': os.getenv('DB_USER', 'test'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'haslo'),
+        'NAME': os.getenv('DB_NAME', 'eskulia'),
+        'USER': os.getenv('DB_USER', 'eskuliauser'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'eskulia'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
