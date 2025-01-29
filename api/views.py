@@ -2,28 +2,56 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .drug_api import PolishMedicinesAPI
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
+@csrf_exempt
+def notifications_handler(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print(data)
+            # parsowanie ustawień wysłanych przez POST request
+            # ...
+
+            # aktualizacja ustawień w db
+            # ...
+
+            return JsonResponse({
+                'status': 'success',
+            })
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid JSON format'
+            }, status=400)
+
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Method not allowed'
+    }, status=405)
 @api_view(['GET'])
 def scan_code(request):
     """
     Endpoint do wyszukiwania leków po zeskanowanym kodzie GTIN/EAN
     """
     scanned_code = request.GET.get('code')
-    
+
     if not scanned_code:
         return Response({
             'error': 'Nie podano kodu'
         }, status=400)
 
     code_type = identify_code_type(scanned_code)
-    
+
     # Wyszukiwanie w bazie URPL
     drug_data = PolishMedicinesAPI.search_drug(scanned_code)
-    
+
     if drug_data and drug_data.get('content') and len(drug_data['content']) > 0:
         # Pobieramy pierwszy lek z listy content
         medicine = drug_data['content'][0]
-        
+
         resp = Response({
             'found': True,
             'drug': {

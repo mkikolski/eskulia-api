@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-m$&)eka5ure1)h-=-4276hej#a9i(t9-kq67ey$q4$%apkag*i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
+    'api.notifications'
+    'sync_rpl.apps.SyncRplConfig',
 ]
 
 MIDDLEWARE = [
@@ -76,12 +79,12 @@ WSGI_APPLICATION = 'eskuliaapi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -124,3 +127,38 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import os
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'eskulia'),
+        'USER': os.getenv('DB_USER', 'eskuliauser'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'eskulia'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
+}
+
+
+# Zdefiniowanie zaplanowanych zadań cron
+CRONJOBS = [
+    # Zadanie uruchamiane codziennie o północy
+    ('0 0 * * *', 'eskulia-api.cron.my_scheduled_job'),
+]
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Firebase Configuration
+FIREBASE_CONFIG_PATH = BASE_DIR / 'firebase-config.json'
+
+try:
+    with open(FIREBASE_CONFIG_PATH) as firebase_config_file:
+        FIREBASE_CONFIG = json.load(firebase_config_file)
+except FileNotFoundError:
+    raise FileNotFoundError(
+        f"Firebase configuration file not found at {FIREBASE_CONFIG_PATH}. "
+        "Please create firebase-config.json file in the project root directory."
+    )
