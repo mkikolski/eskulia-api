@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
+    'sync_rpl.apps.SyncRplConfig',
 ]
 
 MIDDLEWARE = [
@@ -138,9 +139,6 @@ DATABASES = {
     }
 }
 
-INSTALLED_APPS = [
-    'django_crontab',
-]
 
 # Zdefiniowanie zaplanowanych zadań cron
 CRONJOBS = [
