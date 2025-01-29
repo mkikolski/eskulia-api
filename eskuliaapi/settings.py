@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
-    'api.notifications'
+    'api.notifications',
     'sync_rpl.apps.SyncRplConfig',
 ]
 

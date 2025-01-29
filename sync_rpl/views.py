@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.contrib.postgres.search import TrigramSimilarity
 from .models import Medicine
 from .serializers import MedicineSerializer
+from .database_update_django import main
 
 class MedicineByNameView(APIView):
     def get(self, request, name):
@@ -49,3 +50,9 @@ class MedicineByBarcodeView(APIView):
             return Response(response_data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class FetchMedicines(APIView):
+    def get(self, request):
+        main()
+        return Response(status=status.HTTP_200_OK)

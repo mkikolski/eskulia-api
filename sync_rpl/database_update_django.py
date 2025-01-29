@@ -36,7 +36,7 @@ def create_table_if_not_exists(csv_file):
         columns = [f'"{col}" TEXT' for col in df.columns]
 
         for col in df.columns:
-            if not Medicine._meta.get_field(col, None): 
+            if not Medicine._meta.get_field(col):
                 pass  
 
         print(f"Tabela {Medicine._meta.db_table} została sprawdzona.")
@@ -56,6 +56,7 @@ def update_database(csv_file):
 
         medicine_records = []
         for _, row in df.iterrows():
+            print(df.head())
             medicine_records.append(Medicine(
                 identyfikator=row['identyfikator'],
                 nazwa=row['nazwa'],
