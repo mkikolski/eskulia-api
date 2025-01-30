@@ -39,13 +39,13 @@ class MockBotEndpoint(APIView):
             "Die"
         ])
 
-        _, msg_ref = db.collection(u'messages').add({"id": "", "message": user_msg, "sentByBot": False, "timestamp": Timestamp().FromDatetime(datetime.now())})
+        _, msg_ref = db.collection(u'messages').add({"id": "", "message": user_msg, "sentByBot": False, "timestamp": datetime.utcnow()})
         db.collection(u'messages').document(msg_ref.id).update({"id": msg_ref.id})
 
         _, msg_ref_bot = db.collection(u'messages').add(
-            {"id": "", "message": resp, "sentByBot": True, "timestamp": Timestamp().FromDatetime(datetime.now())})
+            {"id": "", "message": resp, "sentByBot": True, "timestamp": datetime.utcnow()})
         db.collection(u'messages').document(msg_ref_bot.id).update({"id": msg_ref_bot.id})
 
-        _, chat_ref = db.collection(u'chats').document(doc_id).update({"chatMessageIds": ArrayUnion([msg_ref.id, msg_ref_bot.id]), "lastMessage": resp})
+        db.collection(u'chats').document(doc_id).update({"chatMessagesIds": ArrayUnion([msg_ref.id, msg_ref_bot.id]), "lastMessage": resp})
 
         return Response(status=status.HTTP_200_OK)
