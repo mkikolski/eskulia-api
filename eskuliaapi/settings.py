@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
+    'chatbot',
     'api.notifications',
-    'sync_rpl.apps.SyncRplConfig',
+    'sync_rpl.apps.SyncRplConfig'
 ]
 
 MIDDLEWARE = [
