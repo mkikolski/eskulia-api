@@ -21,7 +21,7 @@ python manage.py runserver
 ## Documentation
 
 Docs access is available in two separate ways:
-- static site generated from API schema using `redocly`: [LINK](https://mkikolski.github.com/eskulia-api)
+- static site generated from API schema using `redocly`: [LINK](https://mkikolski.github.io/eskulia-api)
 - interactive documentation using `redoc` and `swagger` available as endpoints `/api/redoc/` and `/api/docs/` respecitively after launching the project
 
 ## Tech stack
