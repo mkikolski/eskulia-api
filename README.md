@@ -27,3 +27,4 @@ docs link tba
 - Firebase Admin SDK
 - PyTorch
 - Unsloth
+- DRF-YASG
