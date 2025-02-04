@@ -1,3 +1,10 @@
+"""
+Moduł implementujący mockowy endpoint bota dla systemu czatu.
+
+Moduł zawiera konfigurację połączenia z Firebase oraz endpoint API
+symulujący odpowiedzi bota na wiadomości użytkownika. Wykorzystuje
+Firestore do przechowywania historii konwersacji.
+"""
 from datetime import datetime
 
 import firebase_admin
@@ -20,6 +27,17 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 class MockBotEndpoint(APIView):
+    """
+    Endpoint API symulujący działanie chatbota.
+
+    Klasa obsługuje żądania POST zawierające wiadomości użytkownika
+    i generuje losowe odpowiedzi bota. Wszystkie wiadomości są zapisywane
+    w bazie Firestore wraz z odpowiednimi metadanymi.
+
+    Attributes:
+        permission_classes (list): Lista klas uprawnień, ustawiona na [AllowAny]
+            aby umożliwić dostęp wszystkim użytkownikom
+    """
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):

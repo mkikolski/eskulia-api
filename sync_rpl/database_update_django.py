@@ -1,3 +1,11 @@
+"""
+Moduł do synchronizacji danych leków z Rejestru Produktów Leczniczych.
+
+Moduł pobiera dane w formacie CSV z oficjalnego rejestru leków,
+przetwarza je i aktualizuje bazę danych Django. Obsługuje automatyczną
+synchronizację danych o lekach, włączając ich identyfikatory, nazwy,
+składniki aktywne i inne istotne informacje.
+"""
 import os
 import requests
 import pandas as pd
@@ -13,11 +21,30 @@ from .models import Medicine
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "eskuliaapi.settings")
 django.setup()
 
-
+# URL do pliku CSV z danymi o lekach
 CSV_URL = os.getenv("CSV_URL", "https://rejestry.ezdrowie.gov.pl/api/rpl/medicinal-products/public-pl-report/get-csv")  
 
 def download_csv(url):
-    """Pobiera plik CSV z zewnętrznego źródła."""
+    """
+    Pobiera plik CSV z zewnętrznego źródła i zapisuje lokalnie.
+
+    Args:
+        url (str): Adres URL, z którego ma zostać pobrany plik CSV.
+
+    Returns:
+        str: Nazwa zapisanego pliku CSV ('data.csv').
+
+    Raises:
+        Exception: Gdy nie uda się pobrać pliku (kod statusu != 200).
+
+    Example:
+        >>> csv_file = download_csv(CSV_URL)
+        >>> print(f"Plik został zapisany jako: {csv_file}")
+
+    Notes:
+        - Plik jest zapisywany w bieżącym katalogu jako 'data.csv'
+        - W przypadku istniejącego pliku zostanie on nadpisany
+    """
     response = requests.get(url)
     if response.status_code == 200:
         with open("data.csv", "wb") as f:
@@ -29,7 +56,28 @@ def download_csv(url):
 
 
 def create_table_if_not_exists(csv_file):
-    """Tworzy tabelę w bazie danych na podstawie struktury pliku CSV."""
+    """
+    Weryfikuje zgodność struktury bazy danych z formatem pliku CSV.
+
+    Funkcja sprawdza, czy wszystkie kolumny z pliku CSV mają odpowiadające
+    im pola w modelu Medicine. Służy jako zabezpieczenie przed zmianami
+    w strukturze danych źródłowych.
+
+    Args:
+        csv_file (str): Ścieżka do pliku CSV do przeanalizowania.
+
+    Raises:
+        Exception: Gdy wystąpi błąd podczas analizy pliku lub weryfikacji struktury.
+
+    Notes:
+        - Funkcja wczytuje tylko pierwsze 10 wierszy do analizy struktury
+        - Nie wprowadza zmian w strukturze bazy danych
+        - Służy głównie do celów weryfikacyjnych
+
+    Example:
+        >>> create_table_if_not_exists('data.csv')
+        "Tabela medicines została sprawdzona."
+    """
     try:
         df = pd.read_csv(csv_file, delimiter=';', nrows=10)
 
@@ -46,7 +94,28 @@ def create_table_if_not_exists(csv_file):
 
 
 def update_database(csv_file):
-    """Aktualizuje bazę danych PostgreSQL danymi z pliku CSV."""
+    """
+    Aktualizuje bazę danych danymi z pliku CSV.
+
+    Funkcja czyści obecne rekordy i wprowadza nowe dane z pliku CSV.
+    Wykorzystuje bulk_create dla efektywnego wprowadzania danych.
+
+    Args:
+        csv_file (str): Ścieżka do pliku CSV z danymi do importu.
+
+    Raises:
+        Exception: Gdy wystąpi błąd podczas przetwarzania pliku lub aktualizacji bazy.
+
+    Notes:
+        - Wszystkie istniejące rekordy są usuwane przed importem
+        - Wszystkie wartości są konwertowane na typ string
+        - Wykorzystuje bulk_create dla lepszej wydajności
+        - Obsługuje brakujące wartości, zastępując je pustymi stringami
+
+    Example:
+        >>> update_database('data.csv')
+        "Baza danych została zaktualizowana."
+    """
     try:
         df = pd.read_csv(csv_file, delimiter=';')
 
@@ -78,7 +147,24 @@ def update_database(csv_file):
 
 
 def main():
-    """Pobiera plik CSV i aktualizuje bazę danych."""
+    """
+    Główna funkcja wykonawcza modułu.
+
+    Koordynuje proces pobierania danych i aktualizacji bazy danych.
+    Wykonuje kolejno:
+    1. Pobranie pliku CSV
+    2. Sprawdzenie struktury bazy danych
+    3. Aktualizację danych
+
+    Raises:
+        Exception: Gdy wystąpi błąd w którymkolwiek z etapów procesu.
+
+    Example:
+        >>> main()
+        "Plik CSV został pobrany."
+        "Tabela medicines została sprawdzona."
+        "Baza danych została zaktualizowana."
+    """
     try:
         csv_file = download_csv(CSV_URL)
         create_table_if_not_exists(csv_file)  

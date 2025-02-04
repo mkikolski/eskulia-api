@@ -1,0 +1,352 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/notifications/send/:
+    post:
+      operationId: api_notifications_send_create
+      description: |-
+        Obsługuje żądanie POST do wysyłania powiadomień.
+
+        Args:
+            request: Obiekt żądania HTTP zawierający dane powiadomienia
+
+        Returns:
+            Response: Odpowiedź HTTP z wynikiem operacji wysyłania
+
+        Raises:
+            400 Bad Request: Gdy dane są nieprawidłowe lub typ powiadomienia jest nieznany
+            404 Not Found: Gdy nie znaleziono aktywnych tokenów FCM dla odbiorców
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/notifications/token/delete/:
+    post:
+      operationId: api_notifications_token_delete_create
+      description: |-
+        Obsługuje żądanie POST do dezaktywacji tokenu FCM.
+
+        Args:
+            request: Obiekt żądania HTTP zawierający token FCM do dezaktywacji
+
+        Returns:
+            Response: Odpowiedź HTTP z potwierdzeniem dezaktywacji
+
+        Raises:
+            400 Bad Request: Gdy nie podano tokenu FCM
+            404 Not Found: Gdy nie znaleziono tokenu dla użytkownika
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/notifications/token/update/:
+    post:
+      operationId: api_notifications_token_update_create
+      description: |-
+        Obsługuje żądanie POST do aktualizacji tokenu FCM.
+
+        Args:
+            request: Obiekt żądania HTTP zawierający nowy token FCM
+
+        Returns:
+            Response: Odpowiedź HTTP z zaktualizowanym tokenem
+
+        Raises:
+            400 Bad Request: Gdy dane są nieprawidłowe
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/scan/:
+    get:
+      operationId: api_scan_retrieve
+      description: |-
+        Endpoint do wyszukiwania leków po zeskanowanym kodzie GTIN/EAN.
+
+        Przyjmuje kod kreskowy leku i zwraca szczegółowe informacje o leku
+        pobrane z API Polskich Leków (URPL).
+
+        Args:
+            request (HttpRequest): Obiekt żądania HTTP zawierający parametr 'code'
+                w query string
+
+        Returns:
+            Response: Odpowiedź REST framework zawierająca:
+                - w przypadku znalezienia leku: szczegółowe informacje o leku
+                - w przypadku braku leku: informację o nieznalezieniu oraz
+                  zeskanowany kod i jego zidentyfikowany typ
+
+        Status codes:
+            200: Sukces - lek znaleziony
+            400: Brak wymaganego parametru 'code'
+            404: Lek nie został znaleziony
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /chatbot/mock/:
+    post:
+      operationId: chatbot_mock_create
+      description: |-
+        Endpoint API symulujący działanie chatbota.
+
+        Klasa obsługuje żądania POST zawierające wiadomości użytkownika
+        i generuje losowe odpowiedzi bota. Wszystkie wiadomości są zapisywane
+        w bazie Firestore wraz z odpowiednimi metadanymi.
+
+        Attributes:
+            permission_classes (list): Lista klas uprawnień, ustawiona na [AllowAny]
+                aby umożliwić dostęp wszystkim użytkownikom
+      tags:
+      - chatbot
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /rpl/mbn/{name}:
+    get:
+      operationId: rpl_mbn_retrieve
+      description: |-
+        Obsługuje żądanie GET do wyszukiwania leków po nazwie.
+
+        Metoda wyszukuje leki, których nazwa jest podobna do podanej,
+        używając algorytmu podobieństwa trigramów PostgreSQL.
+
+        Args:
+            request: Obiekt żądania HTTP.
+            name (str): Nazwa leku do wyszukania.
+
+        Returns:
+            Response: Odpowiedź HTTP zawierająca znalezione leki lub komunikat o błędzie.
+                Status 200: Lista znalezionych leków
+                Status 404: Gdy nie znaleziono pasujących leków
+                Status 500: W przypadku błędu serwera
+
+        Example:
+            >>> response = client.get('/api/medicines/name/Apap')
+            >>> print(response.status_code)
+            200
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      tags:
+      - rpl
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /rpl/update/:
+    get:
+      operationId: rpl_update_retrieve
+      description: |-
+        Obsługuje żądanie GET do aktualizacji bazy danych leków.
+
+        Metoda wywołuje funkcję main() z modułu database_update_django,
+        która pobiera najnowsze dane o lekach i aktualizuje bazę danych.
+
+        Args:
+            request: Obiekt żądania HTTP.
+
+        Returns:
+            Response: Odpowiedź HTTP informująca o statusie operacji.
+                Status 200: Aktualizacja zakończona powodzeniem
+
+        Example:
+            >>> response = client.get('/api/medicines/update/')
+            >>> print(response.status_code)
+            200
+      tags:
+      - rpl
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

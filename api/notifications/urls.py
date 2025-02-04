@@ -1,3 +1,9 @@
+"""
+Moduł konfiguracji URL-i dla aplikacji powiadomień.
+
+Ten moduł definiuje ścieżki URL dla obsługi powiadomień FCM (Firebase Cloud Messaging),
+w tym wysyłanie powiadomień oraz zarządzanie tokenami FCM.
+"""
 from django.urls import path
 from . import views
 
