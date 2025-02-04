@@ -19,7 +19,10 @@ python manage.py runserver
 > To allow communication with firebase You need to get `firebase-config.json` file which must be generated through firebase project
 
 ## Documentation
-docs link tba
+
+Docs access is available in two separate ways:
+- static site generated from API schema using `redocly`: [LINK](https://mkikolski.github.com/eskulia-api)
+- interactive documentation using `redoc` and `swagger` available as endpoints `/api/redoc/` and `/api/docs/` respecitively after launching the project
 
 ## Tech stack
 - Django 5.0.2
@@ -27,4 +30,4 @@ docs link tba
 - Firebase Admin SDK
 - PyTorch
 - Unsloth
-- DRF-YASG
+- DRF Spectacular
