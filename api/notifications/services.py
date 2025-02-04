@@ -14,6 +14,12 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
 
 class NotificationTypes:
+    """
+    Klasa definiująca stałe typy powiadomień w systemie.
+    
+    Zawiera predefiniowane typy powiadomień jako stałe klasowe oraz
+    metodę pomocniczą do pobrania wszystkich dostępnych typów.
+    """
     MESSAGE = 'MESSAGE'
     REMINDER = 'REMINDER'
     APPOINTMENT = 'APPOINTMENT'
@@ -22,17 +28,51 @@ class NotificationTypes:
     
     @classmethod
     def get_all_types(cls) -> List[str]:
+        """
+        Pobiera listę wszystkich zdefiniowanych typów powiadomień.
+
+        Returns:
+            List[str]: Lista zawierająca wszystkie dostępne typy powiadomień.
+        """
         return [attr for attr in dir(cls) 
                 if not attr.startswith('_') and 
                 isinstance(getattr(cls, attr), str)]
 
 class NotificationTemplate:
+    """
+    Klasa reprezentująca szablon powiadomienia.
+    
+    Odpowiada za formatowanie i walidację treści powiadomień według
+    zdefiniowanego szablonu.
+
+    Attributes:
+        title_template (str): Szablon tytułu powiadomienia
+        body_template (str): Szablon treści powiadomienia
+        required_fields (List[str]): Lista wymaganych pól w treści powiadomienia
+    """
     def __init__(self, title_template: str, body_template: str, required_fields: List[str]):
+        """
+        Inicjalizuje nowy szablon powiadomienia.
+
+        Args:
+            title_template (str): Szablon tytułu powiadomienia
+            body_template (str): Szablon treści powiadomienia
+            required_fields (List[str]): Lista wymaganych pól
+        """
         self.title_template = title_template
         self.body_template = body_template
         self.required_fields = required_fields
 
     def validate_content(self, content: Dict[str, Any]) -> None:
+        """
+        Sprawdza, czy przekazana treść zawiera wszystkie wymagane pola.
+
+        Args:
+            content (Dict[str, Any]): Słownik z treścią powiadomienia
+
+        Raises:
+            ValidationError: Gdy brakuje wymaganych pól
+        """
         missing_fields = [field for field in self.required_fields 
                          if field not in content]
         if missing_fields:
@@ -41,6 +81,18 @@ class NotificationTemplate:
             )
 
     def format_notification(self, content: Dict[str, Any]) -> Dict[str, str]:
+        """
+        Formatuje powiadomienie według szablonu.
+
+        Args:
+            content (Dict[str, Any]): Słownik z danymi do wstawienia w szablon
+
+        Returns:
+            Dict[str, str]: Sformatowane powiadomienie z tytułem i treścią
+
+        Raises:
+            ValidationError: Gdy brakuje wymaganych pól
+        """
         self.validate_content(content)
         return {
             'title': self.title_template.format(**content),
@@ -48,7 +100,16 @@ class NotificationTemplate:
         }
 
 class NotificationService:
+    """
+    Serwis do zarządzania i wysyłania powiadomień FCM.
+    
+    Obsługuje tworzenie i wysyłanie powiadomień przy użyciu Firebase Cloud Messaging.
+    Zawiera predefiniowane szablony dla różnych typów powiadomień.
+    """
     def __init__(self):
+        """
+        Inicjalizuje serwis powiadomień z predefiniowanymi szablonami.
+        """
         self.notification_templates = {
             NotificationTypes.MESSAGE: NotificationTemplate(
                 title_template="Nowa wiadomość od {sender_name}",
@@ -84,6 +145,21 @@ class NotificationService:
         token: str, 
         data: Dict[str, Any] = None
     ) -> messaging.Message:
+        """
+        Tworzy obiekt powiadomienia FCM na podstawie typu i treści.
+
+        Args:
+            notification_type (str): Typ powiadomienia
+            content (Dict[str, Any]): Treść powiadomienia
+            token (str): Token FCM urządzenia docelowego
+            data (Dict[str, Any], optional): Dodatkowe dane dla powiadomienia
+
+        Returns:
+            messaging.Message: Skonfigurowany obiekt powiadomienia FCM
+
+        Raises:
+            ValidationError: Gdy podany typ powiadomienia jest nieznany
+        """
         if notification_type not in self.notification_templates:
             raise ValidationError(f"Unknown notification type: {notification_type}")
 
@@ -103,6 +179,16 @@ class NotificationService:
         self, 
         notifications: List[messaging.Message]
     ) -> List[Dict]:
+        """
+        Wysyła serię powiadomień FCM asynchronicznie.
+
+        Args:
+            notifications (List[messaging.Message]): Lista powiadomień do wysłania
+
+        Returns:
+            List[Dict]: Lista wyników wysyłania dla każdego powiadomienia,
+                       zawierająca status i identyfikator wiadomości lub błąd
+        """
         results = []
         for notification in notifications:
             try:

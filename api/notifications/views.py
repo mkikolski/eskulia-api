@@ -1,3 +1,9 @@
+"""
+Moduł widoków API dla systemu powiadomień FCM.
+
+Zawiera widoki do obsługi wysyłania powiadomień oraz zarządzania tokenami FCM
+dla użytkowników aplikacji.
+"""
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,12 +20,38 @@ from .serializers import (
 from .services import NotificationService, NotificationTypes
 
 class SendNotificationView(APIView):
+    """
+    Widok API do wysyłania powiadomień FCM do użytkowników.
+
+    Obsługuje wysyłanie powiadomień push do określonych użytkowników
+    za pomocą Firebase Cloud Messaging (FCM).
+
+    Atrybuty:
+        permission_classes: Określa uprawnienia dostępu do widoku
+            (obecnie AllowAny dla celów testowych)
+
+    Metody:
+        post: Przetwarza żądanie wysłania powiadomień
+    """
     # Na testy wyłaczamy autoryzację przez tokeny
     # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
     
 
     def post(self, request):
+        """
+        Obsługuje żądanie POST do wysyłania powiadomień.
+
+        Args:
+            request: Obiekt żądania HTTP zawierający dane powiadomienia
+
+        Returns:
+            Response: Odpowiedź HTTP z wynikiem operacji wysyłania
+
+        Raises:
+            400 Bad Request: Gdy dane są nieprawidłowe lub typ powiadomienia jest nieznany
+            404 Not Found: Gdy nie znaleziono aktywnych tokenów FCM dla odbiorców
+        """
         serializer = NotificationRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -76,11 +108,36 @@ class SendNotificationView(APIView):
         }, status=status.HTTP_200_OK)
 
 class UpdateFCMTokenView(APIView):
+    """
+    Widok API do aktualizacji tokenu FCM dla użytkownika.
+
+    Pozwala na aktualizację lub utworzenie nowego tokenu FCM
+    dla urządzenia użytkownika.
+
+    Atrybuty:
+        permission_classes: Określa uprawnienia dostępu do widoku
+            (obecnie AllowAny dla celów testowych)
+
+    Metody:
+        post: Przetwarza żądanie aktualizacji tokenu FCM
+    """
     # Na testy wyłaczamy autoryzację przez tokeny
     # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Obsługuje żądanie POST do aktualizacji tokenu FCM.
+
+        Args:
+            request: Obiekt żądania HTTP zawierający nowy token FCM
+
+        Returns:
+            Response: Odpowiedź HTTP z zaktualizowanym tokenem
+
+        Raises:
+            400 Bad Request: Gdy dane są nieprawidłowe
+        """
         serializer = FCMTokenUpdateSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -105,11 +162,38 @@ class UpdateFCMTokenView(APIView):
         )
 
 class DeleteFCMTokenView(APIView):
+    """
+    Widok API do dezaktywacji tokenu FCM.
+
+    Pozwala na oznaczenie tokenu FCM jako nieaktywnego,
+    co skutkuje zaprzestaniem wysyłania powiadomień na dane urządzenie.
+
+    Atrybuty:
+        permission_classes: Określa uprawnienia dostępu do widoku
+            (obecnie AllowAny dla celów testowych)
+
+    Metody:
+        post: Przetwarza żądanie dezaktywacji tokenu FCM
+    """
+
     # Na testy wyłaczamy autoryzację przez tokeny
     # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Obsługuje żądanie POST do dezaktywacji tokenu FCM.
+
+        Args:
+            request: Obiekt żądania HTTP zawierający token FCM do dezaktywacji
+
+        Returns:
+            Response: Odpowiedź HTTP z potwierdzeniem dezaktywacji
+
+        Raises:
+            400 Bad Request: Gdy nie podano tokenu FCM
+            404 Not Found: Gdy nie znaleziono tokenu dla użytkownika
+        """
         fcm_token = request.data.get('fcm_token')
         if not fcm_token:
             return Response({
